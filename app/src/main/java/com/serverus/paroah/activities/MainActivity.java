@@ -1,0 +1,173 @@
+package com.serverus.paroah.activities;
+
+import android.app.AlarmManager;
+import android.app.DialogFragment;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+
+
+import com.serverus.paroah.DB.MyDBHandler;
+import com.serverus.paroah.adapters.RemindersAdapter;
+import com.serverus.paroah.broadcastReceiver.AlertReceiver;
+import com.serverus.paroah.R;
+import com.serverus.paroah.fragments.TimePickerFragment;
+import com.serverus.paroah.models.ListInfo;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private Toolbar mToolBar;
+    private NavigationView mDrawer;
+    private ActionBarDrawerToggle mdrawerToggle;
+    private DrawerLayout mDrawerLayout;
+
+    private Button alarmButton;
+    private AlarmManager alarmManager;
+    private PendingIntent sender;
+
+    private RecyclerView listReminder;
+    private RemindersAdapter adapter;
+
+    List<ListInfo> data;
+    ListInfo infoData;
+
+    Button addReminderBtn;
+
+    MyDBHandler dbHandler;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_PROGRESS);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initDrawer();
+        initView();
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mdrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void initDrawer(){
+        mToolBar = (Toolbar) findViewById(R.id.app_bar);
+        mDrawer = (NavigationView) findViewById(R.id.main_drawer);
+        setSupportActionBar(mToolBar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mdrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                mToolBar,
+                R.string.drawer_open,
+                R.string.drawer_close);
+        mDrawerLayout.setDrawerListener(mdrawerToggle);
+        // indicator based on whether the drawerlayout is in open or closed
+        mdrawerToggle.syncState();
+    }
+
+
+//    public List<ListInfo> getData(){
+//        data = new ArrayList<>();
+//
+//        String[] titles = {"sample 1", "sample 2", "sample 3"};
+//        for (int i= 0; i < titles.length; i++)
+//        {
+//            infoData = new ListInfo();
+//
+//            infoData.title = titles[i];
+//            data.add(infoData);
+//        }
+//
+//        return data;
+//    }
+
+    public void initView(){
+        listReminder = (RecyclerView) findViewById(R.id.listData);
+
+        dbHandler = new MyDBHandler(this);
+
+        adapter = new RemindersAdapter(this, dbHandler.getAllReminders());
+        listReminder.setAdapter(adapter);
+        listReminder.setLayoutManager(new LinearLayoutManager(this));
+
+        addReminderBtn = (Button) findViewById(R.id.addBtn);
+
+        addReminderBtn.setOnClickListener(this);
+
+    }
+
+    public void setAlarm(View view){
+        Long alertTime = new GregorianCalendar().getTimeInMillis()+5*1000;
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        sender = PendingIntent.getBroadcast(this, 1, alertIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, sender);
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    public void cancelAlarm(View view){
+        alarmManager.cancel(sender);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()){
+            case R.id.addBtn:
+                Intent addReminder = new Intent(this, AddReminderActivity.class);
+                startActivity(addReminder);
+                break;
+        }
+    }
+}
