@@ -1,5 +1,6 @@
 package com.serverus.paroah.activities;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
@@ -8,10 +9,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.SwipeDismissBehavior;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 import com.serverus.paroah.DB.MyDBHandler;
@@ -53,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     List<ListInfo> data;
     ListInfo infoData;
 
-    Button addReminderBtn;
+    private Button addReminderBtn;
+    private CardView mCardView;
 
     MyDBHandler dbHandler;
     @Override
@@ -141,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         addReminderBtn = (Button) findViewById(R.id.addBtn);
 
         addReminderBtn.setOnClickListener(this);
+
+        mCardView = (CardView) findViewById(R.id.cv);
 
     }
 
