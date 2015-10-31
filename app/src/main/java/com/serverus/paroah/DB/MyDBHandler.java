@@ -71,7 +71,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.insert(TABLE_REMINDER, null, values);
         db.close();
     }
-    
+
     public List<ListInfo> getAllData_a(){
         SQLiteDatabase db = getWritableDatabase();
 

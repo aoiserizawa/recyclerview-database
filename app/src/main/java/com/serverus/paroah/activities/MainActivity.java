@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 
 import com.serverus.paroah.DB.MyDBHandler;
+import com.serverus.paroah.adapters.CursorRecyclerViewAdapter;
 import com.serverus.paroah.adapters.RemindersAdapter;
 import com.serverus.paroah.broadcastReceiver.AlertReceiver;
 import com.serverus.paroah.R;
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //cursorToObject(dbHandler.getAllReminders());
 
-        adapter = new RemindersAdapter(this, dbHandler.getAllReminders(), data);
+        adapter = new RemindersAdapter(this, dbHandler.getAllReminders());
         listReminder.setAdapter(adapter);
         listReminder.setLayoutManager(new LinearLayoutManager(this));
 
@@ -148,29 +149,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 RemindersAdapter.ItemViewHolder itemViewHolder = (RemindersAdapter.ItemViewHolder)viewHolder;
                 int itemPosition = itemViewHolder.getAdapterPosition();
                 adapter.notifyItemRemoved(itemPosition);
+                // get the id of an item via itemViewHolder.id
                 dbHandler.deleteReminder(itemViewHolder.id);
+
+                // update cursor upon deleting do avoid
+                // the card from coming back upon swipe
+                adapter.swapCursor(dbHandler.getAllReminders());
             }
         };
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(listReminder);
-    }
-
-    private void cursorToObject(Cursor cursor) {
-        while (cursor.moveToNext()){
-            int _id=cursor.getInt(cursor.getColumnIndex(dbHandler.COLUMN_ID));
-            String title = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_TITLE_REMINDER));
-            String desc  = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_DESC_REMINDER));
-            String date  = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_DATE_REMINDER));
-
-            ListInfo current = new ListInfo();
-
-            current.set_id(_id);
-            current.title = title;
-            current.desc = desc;
-            current.date = date;
-            data.add(current);
-        }
     }
 
     public void setAlarm(View view){
