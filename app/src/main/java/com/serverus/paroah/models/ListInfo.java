@@ -11,7 +11,7 @@ public class ListInfo {
     public  String  desc;
     public  String  date;
     public  String  time;
-    private int     _id;
+    public  int     _id;
 
     public ListInfo(){
 

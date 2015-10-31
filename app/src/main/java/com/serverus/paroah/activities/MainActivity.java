@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.SwipeDismissBehavior;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +38,7 @@ import com.serverus.paroah.models.ListInfo;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView listReminder;
     private RemindersAdapter adapter;
 
-    List<ListInfo> data;
+    private List<ListInfo> data = Collections.emptyList();
     ListInfo infoData;
 
     private Button addReminderBtn;
@@ -69,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initDrawer();
         initView();
-
 
     }
 
@@ -118,28 +120,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mdrawerToggle.syncState();
     }
 
-
-//    public List<ListInfo> getData(){
-//        data = new ArrayList<>();
-//
-//        String[] titles = {"sample 1", "sample 2", "sample 3"};
-//        for (int i= 0; i < titles.length; i++)
-//        {
-//            infoData = new ListInfo();
-//
-//            infoData.title = titles[i];
-//            data.add(infoData);
-//        }
-//
-//        return data;
-//    }
-
     public void initView(){
         listReminder = (RecyclerView) findViewById(R.id.listData);
 
         dbHandler = new MyDBHandler(this);
 
-        adapter = new RemindersAdapter(this, dbHandler.getAllReminders());
+        //cursorToObject(dbHandler.getAllReminders());
+
+        adapter = new RemindersAdapter(this, dbHandler.getAllReminders(), data);
         listReminder.setAdapter(adapter);
         listReminder.setLayoutManager(new LinearLayoutManager(this));
 
@@ -149,6 +137,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mCardView = (CardView) findViewById(R.id.cv);
 
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                RemindersAdapter.ItemViewHolder itemViewHolder = (RemindersAdapter.ItemViewHolder)viewHolder;
+                int itemPosition = itemViewHolder.getAdapterPosition();
+                adapter.notifyItemRemoved(itemPosition);
+                dbHandler.deleteReminder(itemViewHolder.id);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(listReminder);
+    }
+
+    private void cursorToObject(Cursor cursor) {
+        while (cursor.moveToNext()){
+            int _id=cursor.getInt(cursor.getColumnIndex(dbHandler.COLUMN_ID));
+            String title = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_TITLE_REMINDER));
+            String desc  = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_DESC_REMINDER));
+            String date  = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_DATE_REMINDER));
+
+            ListInfo current = new ListInfo();
+
+            current.set_id(_id);
+            current.title = title;
+            current.desc = desc;
+            current.date = date;
+            data.add(current);
+        }
     }
 
     public void setAlarm(View view){

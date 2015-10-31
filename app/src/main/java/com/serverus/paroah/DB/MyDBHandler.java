@@ -71,21 +71,9 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.insert(TABLE_REMINDER, null, values);
         db.close();
     }
-
-    public void printDatabase(){
-        SQLiteDatabase db = getWritableDatabase();
-
-
-    }
-
+    
     public List<ListInfo> getAllData_a(){
         SQLiteDatabase db = getWritableDatabase();
-//        String[] columns={
-//                COLUMN_ID,
-//                COLUMN_TITLE_REMINDER,
-//                COLUMN_DESC_REMINDER,
-//                COLUMN_DATE_REMINDER
-//        };
 
         String query = "SELECT * FROM "+TABLE_REMINDER;
 
@@ -107,6 +95,12 @@ public class MyDBHandler extends SQLiteOpenHelper{
         }
         return data;
 
+    }
+
+    public boolean deleteReminder(int id)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(TABLE_REMINDER, COLUMN_ID + "=" + id, null) > 0;
     }
 
     public Cursor getAllReminders() {

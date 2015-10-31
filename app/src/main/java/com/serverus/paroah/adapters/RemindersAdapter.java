@@ -3,6 +3,7 @@ package com.serverus.paroah.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +20,15 @@ import java.util.List;
 /**
  * Created by alvinvaldez on 9/20/15.
  */
-public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter.ItemViewHolder> {
+public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter.ItemViewHolder>  {
     private final LayoutInflater inflater;
-    List<ListInfo> data = Collections.emptyList();
     private Context context;
-    ListInfo temporaryBucket;
 
-    public RemindersAdapter(Context context, Cursor cursor){
+    private List<ListInfo> data;
+    private Cursor mItems;
+    private MyDBHandler dbHandler;
+
+    public RemindersAdapter(Context context, Cursor cursor, List<ListInfo> data){
         super(context, cursor);
         inflater = LayoutInflater.from(context);
         this.context = context;
@@ -36,36 +39,35 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
         View view = inflater.inflate(R.layout.reminder_item, parent, false);
 
         ItemViewHolder holder = new ItemViewHolder(view);
-        temporaryBucket = new ListInfo();
 
         return holder;
     }
 
-    @Override
-    public void onBindViewHolder(ItemViewHolder viewHolder, Cursor cursor) {
-            final int     id      = cursor.getInt(cursor.getColumnIndex(MyDBHandler.COLUMN_ID));
-            final String  title   = cursor.getString(cursor.getColumnIndex(MyDBHandler.COLUMN_TITLE_REMINDER));
-            final String  desc    = cursor.getString(cursor.getColumnIndex(MyDBHandler.COLUMN_DESC_REMINDER));
-            final String  date    = cursor.getString(cursor.getColumnIndex(MyDBHandler.COLUMN_DATE_REMINDER));
+        @Override
+        public void onBindViewHolder(ItemViewHolder viewHolder, Cursor cursor) {
+                mItems = cursor;
+                final int     id      = cursor.getInt(cursor.getColumnIndex(MyDBHandler.COLUMN_ID));
+                final String  title   = cursor.getString(cursor.getColumnIndex(MyDBHandler.COLUMN_TITLE_REMINDER));
+                final String  desc    = cursor.getString(cursor.getColumnIndex(MyDBHandler.COLUMN_DESC_REMINDER));
+                final String  date    = cursor.getString(cursor.getColumnIndex(MyDBHandler.COLUMN_DATE_REMINDER));
 
-            viewHolder.title.setText(title);
+                viewHolder.title.setText(title);
 
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Toast.makeText(context, String.valueOf(id), Toast.LENGTH_SHORT).show();
-                }
-            });
-    }
-
-    class ItemViewHolder extends RecyclerView.ViewHolder{
-        TextView title;
-
-        public ItemViewHolder(View itemView) {
-            super(itemView);
-            title = (TextView) itemView.findViewById(R.id.reminderTitle);
+                viewHolder.id = id;
         }
 
-    }
+        public List<ListInfo> getArrayList(){
+            return data;
+        }
+
+        public class ItemViewHolder extends RecyclerView.ViewHolder{
+            public int id;
+            TextView title;
+
+            public ItemViewHolder(View itemView) {
+                super(itemView);
+                title = (TextView) itemView.findViewById(R.id.reminderTitle);
+            }
+
+        }
 }
