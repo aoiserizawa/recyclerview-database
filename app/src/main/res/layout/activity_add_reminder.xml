@@ -40,12 +40,13 @@
 
 
         <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:id="@+id/date_layout"
             android:layout_below="@+id/edit_text_desc"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="20dp">
 
             <EditText
                 android:layout_width="match_parent"
@@ -59,24 +60,35 @@
 
         </android.support.design.widget.TextInputLayout>
 
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_layout"
+            android:layout_below="@+id/edit_text_desc"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="20dp">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Set Time"
+                android:focusable="false"
+                android:textAllCaps="false"
+                android:id="@+id/time_edit"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save"
             android:textAllCaps="false"
             android:id="@+id/save_btn"
-            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete"
-        android:onClick="delete"
-        android:id="@+id/button"
-        android:layout_above="@+id/save_btn"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="84dp" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
