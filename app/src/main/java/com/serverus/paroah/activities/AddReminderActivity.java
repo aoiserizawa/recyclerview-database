@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.widget.EdgeEffect;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.serverus.paroah.DB.MyDBHandler;
 import com.serverus.paroah.R;
@@ -36,6 +38,11 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     private int selectedYear ;
     private int selectedDay ;
     private int selectedMonth;
+
+    private int savedYear ;
+    private int savedDay ;
+    private int savedMonth;
+
     private DatePickerDialog datePickerDialog;
 
     private Button saveBtn;
@@ -47,6 +54,7 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
 
 
     private int mHour;
+    private int mHourOfDay;
     private int mMinute;
 
     MyDBHandler dbHandler;
@@ -67,8 +75,8 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
 
         saveBtn.setOnClickListener(this);
         setTimeEdit.setOnClickListener(this);
+        setDateEdit.setOnClickListener(this);
 
-        setDate();
     }
 
     @Override
@@ -93,8 +101,8 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
         return super.onOptionsItemSelected(item);
     }
 
-    public void setDate(){
-        setDateEdit.setOnClickListener(this);
+    public void setDate(MenuItem item){
+
         setDateEdit.setText("");
 
         c = Calendar.getInstance();
@@ -107,28 +115,71 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
                 selectedYear = year;
                 selectedMonth = monthOfYear;
                 selectedDay = dayOfMonth;
-
                 setDateEdit.setText(formatDate(selectedYear, selectedMonth, selectedDay));
             }
         }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
 
+        switch (item.getItemId()){
+            case R.id.set_date_today:
+                setDateEdit.setText(
+                        formatDate(
+                                c.get(Calendar.YEAR),
+                                c.get(Calendar.MONTH),
+                                c.get(Calendar.DAY_OF_MONTH)
+                        ));
+                break;
+            case R.id.set_date_tomorrow:
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                setDateEdit.setText(
+                        formatDate(
+                                c.get(Calendar.YEAR),
+                                c.get(Calendar.MONTH),
+                                c.get(Calendar.DAY_OF_MONTH)
+                        ));
+                break;
+            default:
+                datePickerDialog.show();
+                break;
+        }
+
     }
 
-    private static String formatDate(int year, int month, int day) {
+    private String formatDate(int year, int month, int day) {
+        saveDateToVar(year,month,day);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(0);
         cal.set(year, month, day);
         Date date = cal.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-
         return sdf.format(date);
+    }
+
+    //I have to use this method to save the selected date from onDateSet
+    // I call this method inside formateDate, because Im losing the value
+    // of variable inside onDateSet.
+
+    //using this inside onDateSet doesnt also get the selected date
+    // thats why I have to use this inside formatDate
+    private void saveDateToVar(int year, int month, int day){
+        savedYear = year;
+        savedDay = day;
+        savedMonth = month;
+    }
+
+    private String formatDateTime(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(savedYear, savedDay, savedMonth, mHourOfDay, mMinute,0);
+        Date date = cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return sdf.format(date);
+
     }
 
     private void setTime(){
         TimePickerDialog.OnTimeSetListener timePicker=new TimePickerDialog.OnTimeSetListener() {
             public void onTimeSet(TimePicker view, int hourOfDay,
                                   int minute) {
-                mHour =  hourOfDay;
+                mHourOfDay = mHour =  hourOfDay;
                 mMinute =  minute;
 
                 String AM_PM ;
@@ -141,6 +192,7 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
                 }
 
                 setTimeEdit.setText(mHour+":"+mMinute+" "+AM_PM);
+                formatDateTime();
             }
         };
 
@@ -151,13 +203,28 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
                 false);
 
         timePickerDialog.show();
+
+    }
+
+    private void showDateMenu(){
+        PopupMenu popupDateMenu = new PopupMenu(this, setDateEdit);
+        popupDateMenu.getMenuInflater().inflate(R.menu.menu_date, popupDateMenu.getMenu());
+
+        popupDateMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                setDate(item);
+                return true;
+            }
+        });
+
+        popupDateMenu.show();
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.date_edit:
-                datePickerDialog.show();
+                showDateMenu();
                 break;
             case R.id.save_btn:
                 saveReminder();
@@ -172,7 +239,7 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
         ListInfo reminder = new ListInfo(
                 reminderTitle.getText().toString(),
                 reminderDesc.getText().toString(),
-                setDateEdit.getText().toString()
+                formatDateTime()
         );
 
         dbHandler.addReminder(reminder);
