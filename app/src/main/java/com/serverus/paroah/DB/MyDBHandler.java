@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MyDBHandler extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     private static final String DATABASE_NAME = "paroah.db";
     public static final String TABLE_REMINDER = "reminders";
     public static final  String COLUMN_ID = "_id";
@@ -37,7 +37,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 COLUMN_ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"+
                 COLUMN_TITLE_REMINDER + " TEXT ,"+
                 COLUMN_DESC_REMINDER + " TEXT ,"+
-                COLUMN_DATE_REMINDER + " TEXT "+
+                COLUMN_DATE_REMINDER + " DATETIME "+
                 ");";
 
         db.execSQL(query);
