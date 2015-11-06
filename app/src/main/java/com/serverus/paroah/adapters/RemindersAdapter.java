@@ -3,6 +3,7 @@ package com.serverus.paroah.adapters;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,11 +47,22 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
         viewHolder.title.setText(title);
 
         // pass id to viewholder to get in swipe
-        viewHolder.id = id;
+        viewHolder.id   = id;
+        viewHolder.date = date;
+
+        viewHolder.title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("aoi", "THIS IS THE DATE"+ date);
+            }
+        });
+
+
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder{
         public int id;
+        public String date;
         TextView title;
 
         public ItemViewHolder(View itemView) {
