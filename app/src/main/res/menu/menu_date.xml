@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/set_date_today"
+        android:title="Today"/>
+    <item
+        android:id="@+id/set_date_tomorrow"
+        android:title="Tomorrow"
+        />
+
+    <item
+        android:id="@+id/set_pick_date"
+        android:title="Pick a date"/>
+</menu>
