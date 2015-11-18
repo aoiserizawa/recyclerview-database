@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
 import com.serverus.paroah.R;
@@ -18,7 +19,11 @@ public class AlertReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        createNotification(context, "Times Up", "5 seconds has passed", "alert");
+        Bundle bundle = intent.getExtras();
+        String title = bundle.getString("title");
+        String time = bundle.getString("time");
+
+        createNotification(context, title, time, "Pharoah Reminder");
     }
 
     public void createNotification(Context context, String msg, String msgText,  String msgAlert){
