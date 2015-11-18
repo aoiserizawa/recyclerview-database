@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MyDBHandler extends SQLiteOpenHelper{
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 11;
     private static final String DATABASE_NAME = "paroah.db";
     public static final String TABLE_REMINDER = "reminders";
     public static final  String COLUMN_ID = "_id";
@@ -60,7 +60,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
         }
     }
 
-    public void addReminder(ListInfo reminder ){
+    public long addReminder(ListInfo reminder){
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE_REMINDER, reminder.getTitle());
         values.put(COLUMN_DESC_REMINDER, reminder.getDesc());
@@ -68,8 +68,10 @@ public class MyDBHandler extends SQLiteOpenHelper{
 
         SQLiteDatabase db = getWritableDatabase();
 
-        db.insert(TABLE_REMINDER, null, values);
+        long id = db.insert(TABLE_REMINDER, null, values);
         db.close();
+
+        return id;
     }
 
     public List<ListInfo> getAllData_a(){
