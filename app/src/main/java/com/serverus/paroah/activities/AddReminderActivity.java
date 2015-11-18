@@ -1,35 +1,35 @@
 package com.serverus.paroah.activities;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.support.design.widget.TextInputLayout;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EdgeEffect;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.serverus.paroah.DB.MyDBHandler;
 import com.serverus.paroah.R;
 import com.serverus.paroah.adapters.RemindersAdapter;
-import com.serverus.paroah.fragments.TimePickerFragment;
+import com.serverus.paroah.broadcastReceiver.AlertReceiver;
 import com.serverus.paroah.models.ListInfo;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class AddReminderActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,6 +58,9 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     private int mMinute;
 
     MyDBHandler dbHandler;
+
+    private AlarmManager alarmManager;
+    private PendingIntent sender;
 
 
     @Override
@@ -141,7 +144,6 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
                 datePickerDialog.show();
                 break;
         }
-
     }
 
     private String formatDate(int year, int month, int day) {
@@ -167,43 +169,59 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     }
 
     private String formatDateTime(){
-        Calendar cal = Calendar.getInstance();
-        cal.set(savedYear, savedDay, savedMonth, mHourOfDay, mMinute,0);
-        Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        return sdf.format(date);
+        Calendar cal = new GregorianCalendar();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss aa");
+        cal.set(Calendar.YEAR, savedYear);
+        cal.set(Calendar.MONTH, savedMonth);
+        cal.set(Calendar.DAY_OF_MONTH, savedDay);
+        cal.set(Calendar.HOUR_OF_DAY, mHourOfDay);
+        cal.set(Calendar.MINUTE, mMinute);
+        cal.set(Calendar.SECOND, 0);
 
+        return sdf.format(cal.getTime());
     }
 
     private void setTime(){
+
         TimePickerDialog.OnTimeSetListener timePicker=new TimePickerDialog.OnTimeSetListener() {
             public void onTimeSet(TimePicker view, int hourOfDay,
                                   int minute) {
+
                 mHourOfDay = mHour =  hourOfDay;
-                mMinute =  minute;
+                mMinute = minute;
 
                 String AM_PM ;
-                if(hourOfDay < 12) {
+                if (hourOfDay > 12) {
+                    mHour -= 12;
+                    AM_PM = "PM";
+                } else if (hourOfDay == 0) {
+                    mHour += 12;
+                    AM_PM = "AM";
+                } else if (hourOfDay == 12)
+                    AM_PM = "PM";
+                else
                     AM_PM = "AM";
 
-                } else {
-                    AM_PM = "PM";
-                    mHour=mHour-12;
-                }
-
-                setTimeEdit.setText(mHour+":"+mMinute+" "+AM_PM);
-                formatDateTime();
+                setTimeEdit.setText(mHour + ":" + utilTime(mMinute) + " " + AM_PM);
             }
         };
 
+        Calendar cal = Calendar.getInstance();
         // the 5th parameter is to tell if the timepicker is 24hr or not, this time its not
         TimePickerDialog timePickerDialog =  new TimePickerDialog(this, timePicker,
-                c.get(Calendar.HOUR_OF_DAY),
-                c.get(Calendar.MINUTE),
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE),
                 false);
 
         timePickerDialog.show();
+    }
 
+    private String utilTime(int value) {
+        if (value < 10) {
+            return "0" + String.valueOf(value);
+        }else{
+            return String.valueOf(value);
+        }
     }
 
     private void showDateMenu(){
@@ -235,6 +253,26 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    public void setAlarm(int alarmId, String dateTime){
+        Date date = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        try {
+            date = sdf.parse(dateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alertIntent.putExtra("title", reminderTitle.getText().toString());
+        alertIntent.putExtra("time", formatDateTime());
+
+        sender = PendingIntent.getBroadcast(this, alarmId, alertIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, date.getTime(), sender);
+    }
+
     private void saveReminder() {
         ListInfo reminder = new ListInfo(
                 reminderTitle.getText().toString(),
@@ -242,7 +280,13 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
                 formatDateTime()
         );
 
-        dbHandler.addReminder(reminder);
+        long id = dbHandler.addReminder(reminder);
+        int newId = (int) id;
+
+        Log.d("aoi", "FORMAT DATE TIME "+formatDateTime());
+
+        setAlarm(newId, formatDateTime());
+
         adapter.notifyDataSetChanged();
     }
 }
