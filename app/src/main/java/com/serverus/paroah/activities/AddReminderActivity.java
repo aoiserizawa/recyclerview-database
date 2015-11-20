@@ -6,8 +6,10 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Menu;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
 import com.serverus.paroah.DB.MyDBHandler;
@@ -51,6 +54,9 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     private EditText setTimeEdit;
     private RemindersAdapter adapter;
     private Calendar c;
+    private RelativeLayout containerLayout;
+
+    private TextInputLayout layoutTitle;
 
 
     private int mHour;
@@ -75,6 +81,10 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
         setDateEdit     = (EditText) findViewById(R.id.date_edit);
         setTimeEdit     = (EditText) findViewById(R.id.time_edit);
         saveBtn         = (Button) findViewById(R.id.save_btn);
+
+        layoutTitle     = (TextInputLayout) findViewById(R.id.title_layout);
+
+        containerLayout = (RelativeLayout) findViewById(R.id.reminderContainer);
 
         saveBtn.setOnClickListener(this);
         setTimeEdit.setOnClickListener(this);
@@ -171,14 +181,20 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     private String formatDateTime(){
         Calendar cal = new GregorianCalendar();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss aa");
-        cal.set(Calendar.YEAR, savedYear);
-        cal.set(Calendar.MONTH, savedMonth);
-        cal.set(Calendar.DAY_OF_MONTH, savedDay);
-        cal.set(Calendar.HOUR_OF_DAY, mHourOfDay);
-        cal.set(Calendar.MINUTE, mMinute);
-        cal.set(Calendar.SECOND, 0);
 
-        return sdf.format(cal.getTime());
+        if(savedYear == 0 && savedMonth == 0 && savedDay == 0 ){
+            return null;
+        }else{
+
+            cal.set(Calendar.YEAR, savedYear);
+            cal.set(Calendar.MONTH, savedMonth);
+            cal.set(Calendar.DAY_OF_MONTH, savedDay);
+            cal.set(Calendar.HOUR_OF_DAY, mHourOfDay);
+            cal.set(Calendar.MINUTE, mMinute);
+            cal.set(Calendar.SECOND, 0);
+
+            return sdf.format(cal.getTime());
+        }
     }
 
     private void setTime(){
@@ -202,7 +218,7 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
                 else
                     AM_PM = "AM";
 
-                setTimeEdit.setText(mHour + ":" + utilTime(mMinute) + " " + AM_PM);
+                setTimeEdit.setText(mHour + ":" + utilMinute(mMinute) + " " + AM_PM);
             }
         };
 
@@ -216,7 +232,7 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
         timePickerDialog.show();
     }
 
-    private String utilTime(int value) {
+    private String utilMinute(int value) {
         if (value < 10) {
             return "0" + String.valueOf(value);
         }else{
@@ -274,19 +290,56 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void saveReminder() {
-        ListInfo reminder = new ListInfo(
-                reminderTitle.getText().toString(),
-                reminderDesc.getText().toString(),
-                formatDateTime()
-        );
+        String title = reminderTitle.getText().toString();
+        String desc = reminderDesc.getText().toString();
 
-        long id = dbHandler.addReminder(reminder);
-        int newId = (int) id;
+        Log.d("aoi", "sample return no date " + formatDateTime());
 
-        Log.d("aoi", "FORMAT DATE TIME "+formatDateTime());
+        if(!title.isEmpty() && formatDateTime() != null && !setTimeEdit.getText().toString().isEmpty()){
+            ListInfo reminder = new ListInfo(
+                    title,
+                    desc,
+                    formatDateTime()
+            );
 
-        setAlarm(newId, formatDateTime());
+            long id = dbHandler.addReminder(reminder);
+            int newId = (int) id;
 
-        adapter.notifyDataSetChanged();
+            setAlarm(newId, formatDateTime());
+
+            adapter.notifyDataSetChanged();
+        }else{
+
+            //validate all the fields that needed to be filled
+            // pass a RelativeLayout type object
+            formIsValid(containerLayout);
+        }
+    }
+
+    public void formIsValid(RelativeLayout layout) {
+        //loop through to all the childview inside relative layout
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            // get each child by position
+            View v = layout.getChildAt(i);
+            // get the class of the view
+            Class<? extends View> child = v.getClass();
+            // check if its TextInputLayout
+            if (child == TextInputLayout.class) {
+                TextInputLayout textInput = (TextInputLayout) v;
+                // get the child of TextInputLayout which is EditText in this case
+                View childTextInput =  textInput.getChildAt(0);
+                // get the class of the EditText
+                Class<? extends View> ch =  childTextInput.getClass();
+                // check if its EditText, in this case its AppCompatEditText
+                if(ch == AppCompatEditText.class){
+                    EditText et = (EditText) childTextInput;
+                    Log.d("aoi", "EDIT TEXT "+et.getText().toString());
+                    if(et.getText().toString().equals("")){
+                        textInput.setErrorEnabled(true);
+                        textInput.setError("Please Fill this field");
+                    }
+                }
+            }
+        }
     }
 }
