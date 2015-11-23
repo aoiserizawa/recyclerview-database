@@ -2,11 +2,13 @@ package com.serverus.paroah.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.serverus.paroah.DB.MyDBHandler;
@@ -50,24 +52,26 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
         viewHolder.id   = id;
         viewHolder.date = date;
 
-        viewHolder.title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("aoi", "THIS IS THE DATE"+ date);
-            }
-        });
-
-
     }
 
-    public class ItemViewHolder extends RecyclerView.ViewHolder{
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
         public int id;
         public String date;
-        TextView title;
+        public TextView title;
+        private CardView layoutContainer;
 
         public ItemViewHolder(View itemView) {
-                super(itemView);
-                title = (TextView) itemView.findViewById(R.id.reminderTitle);
-            }
+            super(itemView);
+            title = (TextView) itemView.findViewById(R.id.reminderTitle);
+
+            layoutContainer = (CardView) itemView.findViewById(R.id.cv);
+
+            layoutContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("aoi", "SAMPLEEEEE");
+                }
+            });
+        }
     }
 }
