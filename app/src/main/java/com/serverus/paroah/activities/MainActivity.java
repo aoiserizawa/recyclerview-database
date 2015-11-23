@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         initDrawer();
         initView();
-
+        initSwipeListener();
     }
 
     @Override
@@ -138,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mCardView = (CardView) findViewById(R.id.cv);
 
+
+    }
+
+    public void initSwipeListener(){
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
