@@ -1,6 +1,7 @@
 package com.serverus.paroah.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.serverus.paroah.DB.MyDBHandler;
 import com.serverus.paroah.R;
+import com.serverus.paroah.activities.ReminderPreviewActivity;
 import com.serverus.paroah.models.ListInfo;
 
 import java.util.List;
@@ -52,6 +54,14 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
         viewHolder.id   = id;
         viewHolder.date = date;
 
+        removeTopDevider(viewHolder);
+    }
+
+    //this removes the top padding of cardview to remove the divider
+    private void removeTopDevider(ItemViewHolder viewHolder){
+        if(viewHolder.getLayoutPosition() == 0){
+            viewHolder.parentLayout.setPadding(0,0,0,0);
+        }
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -59,9 +69,12 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
         public String date;
         public TextView title;
         private CardView layoutContainer;
-
+        private RelativeLayout parentLayout;
         public ItemViewHolder(View itemView) {
             super(itemView);
+
+            parentLayout = (RelativeLayout) itemView.findViewById(R.id.parentLayout);
+
             title = (TextView) itemView.findViewById(R.id.reminderTitle);
 
             layoutContainer = (CardView) itemView.findViewById(R.id.cv);
@@ -69,7 +82,9 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
             layoutContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d("aoi", "SAMPLEEEEE");
+
+                    Intent previewReminder = new Intent(context, ReminderPreviewActivity.class);
+                    context.startActivity(previewReminder);
                 }
             });
         }

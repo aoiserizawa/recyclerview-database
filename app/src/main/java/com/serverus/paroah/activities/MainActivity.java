@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -152,6 +152,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 RemindersAdapter.ItemViewHolder itemViewHolder = (RemindersAdapter.ItemViewHolder)viewHolder;
                 int itemPosition = itemViewHolder.getAdapterPosition();
+
+                cancelAlarm(itemViewHolder.id);
+
                 adapter.notifyItemRemoved(itemPosition);
                 // get the id of an item via itemViewHolder.id
                 dbHandler.deleteReminder(itemViewHolder.id);
@@ -166,20 +169,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         itemTouchHelper.attachToRecyclerView(listReminder);
     }
 
-    public void setAlarm(View view){
-        Long alertTime = new GregorianCalendar().getTimeInMillis()+5*1000;
-        Intent alertIntent = new Intent(this, AlertReceiver.class);
+    public void cancelAlarm(int alarmId){
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        sender = PendingIntent.getBroadcast(this, 1, alertIntent,
+        Intent alertIntent = new Intent(this, AlertReceiver.class);
+        PendingIntent alarmCancel = PendingIntent.getBroadcast(this, alarmId, alertIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, sender);
-        DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(getFragmentManager(), "timePicker");
-    }
-
-    public void cancelAlarm(View view){
-        alarmManager.cancel(sender);
+        alarmManager.cancel(alarmCancel);
     }
 
     @Override

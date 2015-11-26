@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,21 +59,26 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
 
     private TextInputLayout layoutTitle;
 
-
     private int mHour;
     private int mHourOfDay;
     private int mMinute;
 
     MyDBHandler dbHandler;
 
-    private AlarmManager alarmManager;
+    private static AlarmManager alarmManager;
     private PendingIntent sender;
-
+    public static Context context;
+    private Toolbar mToolBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_reminder);
+
+        mToolBar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         dbHandler = new MyDBHandler(this);
 
@@ -89,29 +95,25 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
         saveBtn.setOnClickListener(this);
         setTimeEdit.setOnClickListener(this);
         setDateEdit.setOnClickListener(this);
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_reminder, menu);
+        //getMenuInflater().inflate(R.menu.menu_add_reminder, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
     }
 
     public void setDate(MenuItem item){

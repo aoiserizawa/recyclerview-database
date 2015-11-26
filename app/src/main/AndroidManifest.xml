@@ -27,6 +27,11 @@
             android:name=".activities.AddReminderActivity"
             android:label="@string/title_activity_add_reminder" >
         </activity>
+        <activity
+            android:name=".activities.ReminderPreviewActivity"
+            android:label="@string/title_activity_reminder_preview"
+            android:theme="@style/AppTheme" >
+        </activity>
     </application>
 
 </manifest>

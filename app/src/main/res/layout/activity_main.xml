@@ -10,7 +10,8 @@
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/parentBackground">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/app_bar"
@@ -18,13 +19,13 @@
             android:layout_width="match_parent"
             android:minHeight="?attr/actionBarSize"
             android:background="@color/colorPrimary"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:theme="@style/ThemeOverlay.AppCompat.Light"
             />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/listData"
             android:layout_width="match_parent"
-            android:layout_height="480dp">
+            android:layout_height="474dp">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -33,7 +34,9 @@
             android:layout_height="match_parent"
             android:text="Add Reminder"
             android:textAllCaps="false"
-            android:id="@+id/addBtn" />
+            android:id="@+id/addBtn"
+            android:textColor="@color/buttonText"
+            android:background="@color/buttonBackground"/>
 
     </LinearLayout>
 

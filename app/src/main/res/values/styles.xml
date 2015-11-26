@@ -9,4 +9,16 @@
         <item name="android:textColorSecondary">@color/textColorSecondary</item>
     </style>
 
+
+    <style name="TextInputLayout" parent="TextAppearance.AppCompat">
+        //hint color And Label Color in False State
+        <item name="android:textColorHint">@color/textColorSecondary</item>
+        //Label color in True State And Bar Color False And True State
+        <item name="colorAccent">@color/textColorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+
+    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>
