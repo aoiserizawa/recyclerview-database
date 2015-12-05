@@ -283,6 +283,7 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
 
         Intent alertIntent = new Intent(this, AlertReceiver.class);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alertIntent.putExtra("id", alarmId);
         alertIntent.putExtra("title", reminderTitle.getText().toString());
         alertIntent.putExtra("time", formatDateTime());
 

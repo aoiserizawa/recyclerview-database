@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.SwipeDismissBehavior;
 import android.support.v4.widget.DrawerLayout;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<ListInfo> data = Collections.emptyList();
     ListInfo infoData;
 
-    private Button addReminderBtn;
+    private FloatingActionButton addReminderBtn;
     private CardView mCardView;
 
     MyDBHandler dbHandler;
@@ -132,12 +133,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listReminder.setAdapter(adapter);
         listReminder.setLayoutManager(new LinearLayoutManager(this));
 
-        addReminderBtn = (Button) findViewById(R.id.addBtn);
+        addReminderBtn = (FloatingActionButton) findViewById(R.id.addBtn);
 
         addReminderBtn.setOnClickListener(this);
 
         mCardView = (CardView) findViewById(R.id.cv);
-
 
     }
 

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.serverus.paroah.activities.ReminderPreviewActivity">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/app_bar"
         android:layout_height="wrap_content"
@@ -16,5 +17,50 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/titleTextView"
+        android:layout_below="@+id/app_bar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp"
+        android:layout_marginTop="42dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/descTextView"
+        android:layout_marginTop="42dp"
+        android:layout_below="@+id/titleTextView"
+        android:layout_alignLeft="@+id/titleTextView"
+        android:layout_alignStart="@+id/titleTextView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/timeTextView"
+        android:layout_marginBottom="115dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/descTextView"
+        android:layout_alignStart="@+id/descTextView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/dateTextView"
+        android:layout_alignTop="@+id/timeTextView"
+        android:layout_alignLeft="@+id/timeTextView"
+        android:layout_alignStart="@+id/timeTextView"
+        android:layout_marginTop="52dp" />
 
 </RelativeLayout>

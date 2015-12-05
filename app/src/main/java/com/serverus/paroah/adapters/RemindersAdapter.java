@@ -53,6 +53,7 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
         // pass id to viewholder to get in swipe
         viewHolder.id   = id;
         viewHolder.date = date;
+        viewHolder.desc = desc;
 
         removeTopDevider(viewHolder);
     }
@@ -67,23 +68,25 @@ public class RemindersAdapter extends CursorRecyclerViewAdapter<RemindersAdapter
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         public int id;
         public String date;
+        public String desc;
         public TextView title;
         private CardView layoutContainer;
         private RelativeLayout parentLayout;
         public ItemViewHolder(View itemView) {
             super(itemView);
 
-            parentLayout = (RelativeLayout) itemView.findViewById(R.id.parentLayout);
-
-            title = (TextView) itemView.findViewById(R.id.reminderTitle);
-
+            parentLayout    = (RelativeLayout) itemView.findViewById(R.id.parentLayout);
+            title           = (TextView) itemView.findViewById(R.id.reminderTitle);
             layoutContainer = (CardView) itemView.findViewById(R.id.cv);
 
             layoutContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     Intent previewReminder = new Intent(context, ReminderPreviewActivity.class);
+                    previewReminder.putExtra("title", title.getText());
+                    previewReminder.putExtra("desc", desc);
+                    previewReminder.putExtra("date", date);
+
                     context.startActivity(previewReminder);
                 }
             });
