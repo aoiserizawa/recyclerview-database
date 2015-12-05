@@ -1,6 +1,7 @@
 package com.serverus.paroah.activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -8,7 +9,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.serverus.paroah.DB.MyDBHandler;
 import com.serverus.paroah.R;
+import com.serverus.paroah.models.ListInfo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,17 +32,20 @@ public class ReminderPreviewActivity extends AppCompatActivity {
     private String desc;
     private String date;
 
+    private MyDBHandler dbHandler;
+    private Cursor cursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reminder_preview);
 
+        dbHandler = new MyDBHandler(this);
+
         mToolBar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-
 
         titleTextView   = (TextView) findViewById(R.id.titleTextView);
         descTextView    = (TextView) findViewById(R.id.descTextView);
@@ -72,7 +78,21 @@ public class ReminderPreviewActivity extends AppCompatActivity {
         int id = 0;
         int reminderID = extras.getIntExtra("id", id);
 
-        //titleTextView.setText(" "+id);
+        cursor = dbHandler.getReminder(reminderID);
+
+        while (cursor.moveToNext()){
+            int _id         =cursor.getInt(cursor.getColumnIndex(dbHandler.COLUMN_ID));
+            String title    = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_TITLE_REMINDER));
+            String desc     = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_DESC_REMINDER));
+            String date     = cursor.getString(cursor.getColumnIndex(dbHandler.COLUMN_DATE_REMINDER));
+
+            String[] dateDB = date.split(" ");
+
+            titleTextView.setText(title);
+            descTextView.setText(desc);
+            timeTextView.setText(formatTime(dateDB[1])+" "+dateDB[2]);
+            dateTextView.setText(formatDate(dateDB[0]));
+        }
     }
 
     private String formatDate(String date) {
@@ -102,6 +122,8 @@ public class ReminderPreviewActivity extends AppCompatActivity {
 
         if(intTime > 12){
             intTime = intTime-12;
+        }else if(intTime == 00){
+            intTime = 12;
         }
         return String.valueOf(intTime)+":"+minute;
     }
