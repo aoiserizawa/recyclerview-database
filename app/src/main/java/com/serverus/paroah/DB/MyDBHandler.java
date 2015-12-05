@@ -116,6 +116,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
     }
 
     public Cursor getReminder(int id){
+
         SQLiteDatabase db = getWritableDatabase();
 
         String[] tableColumns = new String[] {
@@ -131,7 +132,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         };
 
         Cursor cursor = db.query(TABLE_REMINDER, tableColumns,whereClause,whereArgs, null, null, null);
-        db.close();
 
         return cursor;
     }
