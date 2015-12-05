@@ -108,12 +108,32 @@ public class MyDBHandler extends SQLiteOpenHelper{
     public Cursor getAllReminders() {
 
         SQLiteDatabase db = getWritableDatabase();
-
         String query = "SELECT * FROM "+TABLE_REMINDER;
 
         allReminders = db.rawQuery(query, null);
 
         return allReminders;
+    }
+
+    public Cursor getReminder(int id){
+        SQLiteDatabase db = getWritableDatabase();
+
+        String[] tableColumns = new String[] {
+                COLUMN_ID,
+                COLUMN_TITLE_REMINDER,
+                COLUMN_DESC_REMINDER,
+                COLUMN_DATE_REMINDER
+        };
+
+        String whereClause = COLUMN_ID+" = ?";
+        String[] whereArgs = new String[] {
+                String.valueOf(id)
+        };
+
+        Cursor cursor = db.query(TABLE_REMINDER, tableColumns,whereClause,whereArgs, null, null, null);
+        db.close();
+
+        return cursor;
     }
 
 }
