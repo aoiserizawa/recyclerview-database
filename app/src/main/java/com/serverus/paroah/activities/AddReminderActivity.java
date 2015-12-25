@@ -53,7 +53,6 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
     private EditText reminderTitle;
     private EditText reminderDesc;
     private EditText setTimeEdit;
-    private RemindersAdapter adapter;
     private Calendar c;
     private RelativeLayout containerLayout;
 
@@ -310,7 +309,10 @@ public class AddReminderActivity extends AppCompatActivity implements View.OnCli
 
             setAlarm(newId, formatDateTime());
 
-            adapter.notifyDataSetChanged();
+            //adapter.notifyDataSetChanged();
+
+            finish();
+
         }else{
 
             //validate all the fields that needed to be filled
